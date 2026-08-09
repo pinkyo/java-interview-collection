@@ -13,7 +13,7 @@
 | **单体** | 所有功能一个 war/jar | 耦合、扩展难、发布慢 |
 | **集群+分布式** | 多台部署 + 负载均衡 | Session 共享、缓存一致性 |
 | **垂直拆分** | 按业务拆分系统 | 系统间接口调用混乱 |
-| **SOA** | ESB 中心化治理 | ESB 成为瓶颈 |
+| **SOA**（Service-Oriented Architecture，面向服务的架构） | ESB（Enterprise Service Bus，企业服务总线）中心化治理 | ESB 成为瓶颈 |
 | **微服务** | 去中心化，轻量通信 | 复杂度从代码转移到运维 |
 | **服务网格** | Sidecar 代理（Istio） | 学习成本高 |
 
@@ -33,7 +33,7 @@
 └─────────────────────────────────────┘
 ```
 
-### DDD（领域驱动设计）
+### DDD（Domain-Driven Design，领域驱动设计）
 
 ```
 表现层 → 应用层 → 领域层 → 基础设施层
@@ -54,7 +54,7 @@
 | 核心 | 数据驱动（以表设计为起点） | 领域驱动（以业务建模为起点） |
 | 业务逻辑 | Service 层代码 | 领域模型内 |
 | 复杂业务 | Service 层越来越胖 | 领域模型承担 |
-| 适用 | CRUD 场景 | 复杂业务场景 |
+| 适用 | CRUD（Create Read Update Delete，增删改查）场景 | 复杂业务场景 |
 
 ---
 
@@ -96,11 +96,11 @@
 
 | 模式 | 说明 | 场景 |
 |------|------|------|
-| **CQRS** | 读写分离模型，命令和查询用不同数据源 | 复杂业务、高并发读写 |
+| **CQRS**（Command Query Responsibility Segregation，命令查询职责分离） | 读写分离模型，命令和查询用不同数据源 | 复杂业务、高并发读写 |
 | **事件溯源** | 不存当前状态，只存事件序列 | 审计、金融系统 |
 | **六边形架构** | 端口-适配器，业务逻辑与外部隔离 | 可测试性要求高 |
 | **整洁架构** | 依赖向内，业务实体在最内层 | 大型长期项目 |
-| **BFF** | 为前端定制的后端层 | 多端（Web/iOS/Android/H5） |
+| **BFF**（Backend For Frontend，服务于前端的后端） | 为前端定制的后端层 | 多端（Web/iOS/Android/H5） |
 
 ---
 
@@ -110,7 +110,7 @@
 
 ```
 功能需求：是否满足业务场景
-性能：QPS、响应时间、吞吐量
+性能：QPS（Queries Per Second，每秒查询数）、响应时间、吞吐量
 可用性：故障恢复、容灾能力
 可扩展性：是否容易水平扩展
 运维成本：部署/监控/告警难度
@@ -123,16 +123,16 @@
 | 场景 | 推荐方案 |
 |------|---------|
 | Web 框架 | Spring Boot |
-| ORM | MyBatis-Plus |
+| ORM（Object-Relational Mapping，对象关系映射） | MyBatis-Plus |
 | 数据库 | MySQL + Redis |
 | 消息队列 | Kafka（大数据量）/ RabbitMQ（复杂路由） |
 | 注册/配置 | Nacos |
-| RPC | Dubbo / gRPC |
+| RPC（Remote Procedure Call，远程过程调用） | Dubbo / gRPC |
 | 网关 | Spring Cloud Gateway |
 | 搜索引擎 | Elasticsearch |
 | 分布式事务 | Seata |
 | 任务调度 | XXL-JOB |
-| 对象存储 | MinIO / 阿里云OSS |
+| 对象存储 | MinIO / 阿里云 OSS（Object Storage Service） |
 | 容器编排 | Kubernetes |
 
 ---
