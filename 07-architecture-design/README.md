@@ -11,6 +11,7 @@
 | [microservice.md](./microservice.md) | 微服务拆分原则、服务间通信、服务网格 |
 | [high-availability.md](./high-availability.md) | 高并发/高可用/高性能设计、限流/降级/熔断、全链路压测 |
 | [security.md](./security.md) | 认证与授权（OAuth2/JWT）、SQL 注入、XSS/CSRF、API 安全 |
+| [like-system.md](./like-system.md) | 点赞系统：Kafka 异步批量、Redis+MySQL、多级缓存读优化、幂等 |
 
 ## 🔥 高频考点速览
 
