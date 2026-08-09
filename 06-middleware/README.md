@@ -8,6 +8,7 @@
 |------|-----------|
 | [kafka.md](./kafka.md) | Topic/Partition 模型、高吞吐原理、零拷贝、ISR、幂等与事务 |
 | [rabbitmq.md](./rabbitmq.md) | 交换机类型、消息确认机制、死信队列、延迟消息、集群 |
+| [mq-selection.md](./mq-selection.md) | RabbitMQ vs Kafka 选型标准、对比维度、决策树 |
 | [elasticsearch.md](./elasticsearch.md) | 倒排索引、分片机制、写入/检索原理、聚合分析 |
 | [nginx.md](./nginx.md) | 反向代理与正向代理、负载均衡算法、限流配置、Lua 扩展 |
 | [zookeeper.md](./zookeeper.md) | ZAB 协议、节点类型、Watcher 机制、选举 Leader、典型应用 |
