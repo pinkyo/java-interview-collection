@@ -83,6 +83,8 @@ DDD 采用四层架构（表现/应用/领域/基础设施），核心是**领�
 | **整洁架构** | 依赖向内，业务实体在最内层 | 大型长期项目 |
 | **BFF**（Backend For Frontend，服务于前端的后端） | 为前端定制的后端层 | 多端（Web/iOS/Android/H5） |
 
+> 关于 **六边形架构** 和 **整洁架构** 的详细介绍，参见 [hexagonal-clean-architecture.md](./hexagonal-clean-architecture.md)。
+
 ---
 
 ## 五、技术选型
