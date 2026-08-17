@@ -33,20 +33,131 @@ b = null;
 
 ---
 
-## 二、引用类型
+## 二、引用类型 🔥
 
-| 类型 | 回收时机 | 使用场景 |
-|------|---------|---------|
-| 强引用 | 永不回收（除非不可达） | 默认，new 对象 |
-| 软引用 | 内存不足时回收 | 缓存（适合图片缓存） |
-| 弱引用 | 下次 GC 时回收 | ThreadLocal、WeakHashMap |
-| 虚引用 | 任何时候 | 管理直接内存、跟踪回收 |
+Java 提供了四种引用类型，从强到弱依次为：**强引用 > 软引用 > 弱引用 > 虚引用**。
+
+### 2.1 四种引用对比
+
+| 类型 | 回收时机 | 是否影响 GC | 使用场景 |
+|------|---------|------------|---------|
+| 强引用 | 永不回收（除非不可达） | 不会被 GC | 默认，new 对象 |
+| 软引用 | 内存不足时回收 | 内存不足才回收 | 缓存（适合图片缓存） |
+| 弱引用 | 下次 GC 必定回收 | GC 时立即回收 | ThreadLocal、WeakHashMap |
+| 虚引用 | 任何时候都可能 | 无法通过它获取对象 | 管理直接内存、跟踪对象回收 |
+
+### 2.2 强引用（StrongReference）
+
+最常用的引用类型，`Object obj = new Object()` 就是强引用。**只要强引用还在，GC 永远不会回收它**。
 
 ```java
-// 软引用示例
-SoftReference<Bitmap> cache = new SoftReference<>(bitmap);
-// 虚引用示例（配合 ReferenceQueue 回收直接内存）
-PhantomReference<Object> ref = new PhantomReference<>(obj, queue);
+Object obj = new Object();
+// 只要 obj 还指向这个对象，它就不会被 GC
+obj = null;  // 去掉强引用后，对象才会被回收
+```
+
+### 2.3 软引用（SoftReference）
+
+**内存足够时不回收，内存不足时回收**。适合做缓存，JVM 在抛出 OOM 前会尝试回收所有软引用。
+
+```java
+SoftReference<byte[]> cache = new SoftReference<>(new byte[1024 * 1024 * 10]);
+
+byte[] data = cache.get();
+if (data == null) {
+    // 已被回收，需要重新加载
+    data = loadFromDisk();
+    cache = new SoftReference<>(data);
+}
+```
+
+### 2.4 弱引用（WeakReference）
+
+**只要发生 GC，无论内存是否充足，都会被回收**。生命周期比软引用更短。
+
+```java
+WeakReference<String> weakRef = new WeakReference<>(new String("hello"));
+
+System.out.println(weakRef.get());  // hello
+System.gc();
+System.out.println(weakRef.get());  // null（被回收了）
+```
+
+**典型应用：ThreadLocal**
+
+```java
+// ThreadLocalMap 的 Entry 继承 WeakReference
+static class Entry extends WeakReference<ThreadLocal<?>> {
+    Object value;
+    Entry(ThreadLocal<?> k, Object v) {
+        super(k);  // Key 是弱引用
+        value = v;
+    }
+}
+```
+
+**为什么用弱引用？** 如果 Key 是强引用，即使外部不再使用 ThreadLocal 对象，只要线程存活，ThreadLocal 就无法被 GC。弱引用让 ThreadLocal 对象可以被回收（但留下了 Value 泄漏的隐患，需要手动 `remove()`）。
+
+**另一个典型应用：WeakHashMap**
+
+```java
+WeakHashMap<Object, String> map = new WeakHashMap<>();
+Object key = new Object();
+map.put(key, "value");
+key = null;
+System.gc();
+// key 被回收后，对应的 Entry 也会被自动移除
+```
+
+### 2.5 虚引用（PhantomReference）
+
+**最弱的引用，`get()` 永远返回 null**。唯一作用：配合 `ReferenceQueue` 在对象被回收时收到通知。
+
+```java
+ReferenceQueue<Object> queue = new ReferenceQueue<>();
+PhantomReference<Object> phantom = new PhantomReference<>(new Object(), queue);
+
+// phantom.get() 永远返回 null！
+
+// 当对象被 GC 回收后，虚引用会被加入队列
+Reference<?> ref = queue.poll();  // 非阻塞
+// 或 Reference<?> ref = queue.remove();  // 阻塞等待
+```
+
+**典型应用：管理直接内存（DirectByteBuffer）**
+
+```java
+// DirectByteBuffer 内部使用 Cleaner（继承 PhantomReference）
+// 当 DirectByteBuffer 对象被 GC 时，Cleaner 被加入队列
+// 后台线程从队列中取出 Cleaner，调用 unsafe.freeMemory() 释放堆外内存
+```
+
+### 2.6 引用队列（ReferenceQueue）
+
+软引用和弱引用也可以配合 `ReferenceQueue` 使用，在对象被回收后异步清理资源：
+
+```java
+ReferenceQueue<Object> queue = new ReferenceQueue<>();
+
+SoftReference<Object> softRef = new SoftReference<>(new Object(), queue);
+WeakReference<Object> weakRef = new WeakReference<>(new Object(), queue);
+
+// 当对象被回收后，引用对象会被放入队列
+// 可以从队列中取出，做后续清理工作
+```
+
+### 2.7 生命周期总结
+
+```
+强引用 → 软引用 → 弱引用 → 虚引用
+（强）                          （弱）
+
+GC 回收优先级：虚引用 > 弱引用 > 软引用 > 强引用
+
+当对象不可达时，不一定会被立即回收，而是经历以下阶段：
+1. 如果还有软引用，等内存不足时回收
+2. 如果只有弱引用，下次 GC 回收
+3. 如果有虚引用，GC 回收后放入 ReferenceQueue 通知
 ```
 
 ---
